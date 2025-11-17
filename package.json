@@ -1,0 +1,23 @@
+{
+  "name": "proofplay",
+  "version": "1.0.0",
+  "description": "Decentralized Gaming Oracle & Prediction Market Data Layer on Sui and Walrus",
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "build:move": "cd move && sui move build",
+    "test:move": "cd move && sui move test",
+    "publish": "cd move && sui client publish --gas-budget 100000000",
+    "game-client": "node game-sdk/mock-game-client.js"
+  },
+  "keywords": [
+    "sui",
+    "walrus",
+    "blockchain",
+    "gaming",
+    "oracle",
+    "prediction-markets"
+  ],
+  "author": "ProofPlay Team",
+  "license": "MIT"
+}

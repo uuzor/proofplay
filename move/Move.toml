@@ -1,0 +1,13 @@
+[package]
+name = "ProofPlay"
+version = "0.1.0"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+Walrus = { git = "https://github.com/MystenLabs/walrus-docs.git", subdir = "examples/move", rev = "main" }
+
+[addresses]
+proofplay = "0x0"
+sui = "0x2"
+walrus = "0x0"
