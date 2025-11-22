@@ -1,587 +1,346 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProofPlay - Decentralized Gaming Oracle</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .tagline {
-            font-size: 1.2em;
-            opacity: 0.95;
-        }
-
-        .demo-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .section-title {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .flow-diagram {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .flow-step {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .flow-step:hover {
-            transform: translateY(-5px);
-        }
-
-        .flow-step-number {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .flow-step-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .flow-step-desc {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-
-        .stat-label {
-            font-size: 1em;
-            color: #666;
-        }
-
-        .match-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-
-        .match-item {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .match-item.win {
-            border-left-color: #28a745;
-        }
-
-        .match-item.loss {
-            border-left-color: #dc3545;
-        }
-
-        .match-item.draw {
-            border-left-color: #ffc107;
-        }
-
-        .match-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .match-id {
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .match-outcome {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .match-outcome.win {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .match-outcome.loss {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .match-outcome.draw {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .match-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .log-container {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding: 5px;
-            border-left: 3px solid #667eea;
-            padding-left: 10px;
-        }
-
-        .log-entry.success {
-            border-left-color: #28a745;
-        }
-
-        .log-entry.error {
-            border-left-color: #dc3545;
-        }
-
-        .log-entry.info {
-            border-left-color: #17a2b8;
-        }
-
-        .highlight {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .tech-stack {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-
-        .tech-badge {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: #667eea;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ProofPlay - The Decentralized Oracle for Gaming</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 300,
+            'GRAD' 0,
+            'opsz' 24
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🎮 ProofPlay</h1>
-            <p class="tagline">Decentralized Gaming Oracle & Prediction Market Data Layer</p>
-            <div class="tech-stack">
-                <span class="tech-badge">⚡ Sui</span>
-                <span class="tech-badge">🦭 Walrus</span>
-                <span class="tech-badge">🔒 Seal</span>
-                <span class="tech-badge">🌊 Nautilus</span>
-            </div>
-        </header>
-
-        <!-- How It Works -->
-        <div class="demo-section">
-            <h2 class="section-title">📋 How It Works</h2>
-            <div class="flow-diagram">
-                <div class="flow-step">
-                    <div class="flow-step-number">1</div>
-                    <div class="flow-step-title">Play Game</div>
-                    <div class="flow-step-desc">Player completes PvP match</div>
-                </div>
-                <div class="flow-step">
-                    <div class="flow-step-number">2</div>
-                    <div class="flow-step-title">Generate Proof</div>
-                    <div class="flow-step-desc">Create cryptographic proof</div>
-                </div>
-                <div class="flow-step">
-                    <div class="flow-step-number">3</div>
-                    <div class="flow-step-title">Store on Walrus</div>
-                    <div class="flow-step-desc">Upload to decentralized storage</div>
-                </div>
-                <div class="flow-step">
-                    <div class="flow-step-number">4</div>
-                    <div class="flow-step-title">Submit to Sui</div>
-                    <div class="flow-step-desc">Record on blockchain</div>
-                </div>
-                <div class="flow-step">
-                    <div class="flow-step-number">5</div>
-                    <div class="flow-step-title">Markets Query</div>
-                    <div class="flow-step-desc">Prediction markets pay for data</div>
-                </div>
-                <div class="flow-step">
-                    <div class="flow-step-number">6</div>
-                    <div class="flow-step-title">Earn Revenue</div>
-                    <div class="flow-step-desc">Players get paid per query</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Demo Controls -->
-        <div class="demo-section">
-            <h2 class="section-title">🎯 Interactive Demo</h2>
-            <div class="controls">
-                <button id="playMatchBtn" onclick="playMatch()">🎮 Play Match</button>
-                <button id="autoPlayBtn" onclick="autoPlay()">⚡ Auto Play (3 matches)</button>
-                <button id="queryDataBtn" onclick="queryData()">🔍 Query Match Data</button>
-                <button id="clearBtn" onclick="clearData()">🗑️ Clear All</button>
-            </div>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Matches</div>
-                    <div class="stat-value" id="totalMatches">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Win Rate</div>
-                    <div class="stat-value" id="winRate">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Queries</div>
-                    <div class="stat-value" id="totalQueries">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Revenue Earned</div>
-                    <div class="stat-value" id="revenue">0 SUI</div>
-                </div>
-            </div>
-
-            <!-- Activity Log -->
-            <h3 style="margin-top: 30px; color: #667eea;">📜 Activity Log</h3>
-            <div class="log-container" id="activityLog">
-                <div class="log-entry info">Ready to start. Click "Play Match" to begin.</div>
-            </div>
-        </div>
-
-        <!-- Match History -->
-        <div class="demo-section">
-            <h2 class="section-title">📊 Match History</h2>
-            <div class="match-list" id="matchList">
-                <p style="text-align: center; color: #999; padding: 40px;">No matches played yet. Start playing to see your history!</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Demo state
-        let matches = [];
-        let totalQueries = 0;
-        let totalRevenue = 0;
-
-        // Mock player address
-        const playerAddress = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
-
-        function addLog(message, type = 'info') {
-            const log = document.getElementById('activityLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.innerHTML = `<span style="opacity: 0.5;">[${new Date().toLocaleTimeString()}]</span> ${message}`;
-            log.appendChild(entry);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function updateStats() {
-            document.getElementById('totalMatches').textContent = matches.length;
-
-            const wins = matches.filter(m => m.outcome === 1).length;
-            const winRate = matches.length > 0 ? ((wins / matches.length) * 100).toFixed(1) : 0;
-            document.getElementById('winRate').textContent = winRate + '%';
-
-            document.getElementById('totalQueries').textContent = totalQueries;
-            document.getElementById('revenue').textContent = totalRevenue.toFixed(2) + ' SUI';
-        }
-
-        function generateMatchId() {
-            return `match_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        }
-
-        function generateBlobId(data) {
-            // Simple hash function for demo
-            let hash = 0;
-            const str = JSON.stringify(data);
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash = hash & hash;
+<script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#4F46E5","primary-dark": "#3730A3",
+              "green-accent": "#10B981","red-accent": "#EF4444","text-primary": "#111827",
+              "text-secondary": "#6B7280",
+              "border-light": "#E5E7EB",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+                "DEFAULT": "0.75rem",
+                "lg": "1rem",
+                "xl": "1.5rem",
+                "full": "9999px"
+            },
+            boxShadow: {
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+              'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07)',
+            },
+            animation: {
+                'marquee': 'marquee 30s linear infinite',
+            },
+            keyframes: {
+                marquee: {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(-100%)' },
+                }
             }
-            return Math.abs(hash).toString(16).padStart(16, '0');
-        }
-
-        async function playMatch() {
-            const btn = document.getElementById('playMatchBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> Playing...';
-
-            addLog('🎮 Starting new match...', 'info');
-
-            // Simulate match
-            await sleep(500);
-            const outcome = Math.floor(Math.random() * 3); // 0=loss, 1=win, 2=draw
-            const outcomeText = outcome === 1 ? 'WIN' : outcome === 0 ? 'LOSS' : 'DRAW';
-
-            const matchData = {
-                matchId: generateMatchId(),
-                gameId: 'CS2',
-                playerAddress: playerAddress,
-                opponentAddress: '0x' + Math.random().toString(16).substr(2, 8),
-                outcome: outcome,
-                kills: Math.floor(Math.random() * 30),
-                deaths: Math.floor(Math.random() * 30),
-                score: Math.floor(Math.random() * 10000),
-                timestamp: Date.now(),
-            };
-
-            addLog(`⚔️ Match completed: <span class="highlight">${outcomeText}</span> - ${matchData.kills}K/${matchData.deaths}D`, 'info');
-
-            // Generate proof
-            await sleep(300);
-            addLog('🔐 Generating cryptographic proof...', 'info');
-            const proofHash = generateBlobId(matchData);
-
-            // Upload to Walrus
-            await sleep(500);
-            const blobId = generateBlobId(matchData);
-            matchData.walrusBlobId = blobId;
-            addLog(`📤 Uploaded to Walrus: <span class="highlight">${blobId.substr(0, 16)}...</span>`, 'success');
-
-            // Submit to blockchain
-            await sleep(400);
-            const txHash = '0x' + Math.random().toString(16).substr(2, 16);
-            matchData.txHash = txHash;
-            addLog(`⛓️ Submitted to Sui: <span class="highlight">${txHash.substr(0, 16)}...</span>`, 'success');
-
-            // Save match
-            matches.push(matchData);
-            updateStats();
-            renderMatches();
-
-            addLog('✅ Match recorded successfully on-chain!', 'success');
-
-            btn.disabled = false;
-            btn.innerHTML = '🎮 Play Match';
-        }
-
-        async function autoPlay() {
-            const btn = document.getElementById('autoPlayBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> Auto Playing...';
-
-            addLog('⚡ Starting auto-play mode (3 matches)...', 'info');
-
-            for (let i = 1; i <= 3; i++) {
-                addLog(`--- Match ${i}/3 ---`, 'info');
-                await playMatch();
-                if (i < 3) await sleep(800);
-            }
-
-            addLog('🎉 Auto-play complete!', 'success');
-
-            btn.disabled = false;
-            btn.innerHTML = '⚡ Auto Play (3 matches)';
-        }
-
-        async function queryData() {
-            if (matches.length === 0) {
-                addLog('❌ No matches available to query', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('queryDataBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> Querying...';
-
-            const match = matches[Math.floor(Math.random() * matches.length)];
-
-            addLog('🔍 Prediction market querying match data...', 'info');
-
-            // Simulate query
-            await sleep(400);
-            addLog(`📥 Retrieved proof from Walrus: <span class="highlight">${match.matchId}</span>`, 'info');
-
-            await sleep(300);
-            const queryPayment = 0.05; // 0.05 SUI per query
-            addLog(`💰 Payment received: <span class="highlight">${queryPayment} SUI</span>`, 'success');
-
-            // Distribute revenue
-            await sleep(200);
-            const playerShare = queryPayment * 0.7; // 70% to player
-            totalRevenue += playerShare;
-            totalQueries++;
-
-            addLog(`💸 Revenue distributed: <span class="highlight">${playerShare.toFixed(3)} SUI</span> to player`, 'success');
-
-            updateStats();
-
-            btn.disabled = false;
-            btn.innerHTML = '🔍 Query Match Data';
-        }
-
-        function clearData() {
-            matches = [];
-            totalQueries = 0;
-            totalRevenue = 0;
-            updateStats();
-            renderMatches();
-            document.getElementById('activityLog').innerHTML = '<div class="log-entry info">Data cleared. Ready to start fresh!</div>';
-        }
-
-        function renderMatches() {
-            const listEl = document.getElementById('matchList');
-
-            if (matches.length === 0) {
-                listEl.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No matches played yet. Start playing to see your history!</p>';
-                return;
-            }
-
-            listEl.innerHTML = matches.slice().reverse().map(match => {
-                const outcomeClass = match.outcome === 1 ? 'win' : match.outcome === 0 ? 'loss' : 'draw';
-                const outcomeText = match.outcome === 1 ? 'WIN' : match.outcome === 0 ? 'LOSS' : 'DRAW';
-
-                return `
-                    <div class="match-item ${outcomeClass}">
-                        <div class="match-header">
-                            <span class="match-id">${match.matchId}</span>
-                            <span class="match-outcome ${outcomeClass}">${outcomeText}</span>
-                        </div>
-                        <div class="match-details">
-                            <div><strong>K/D:</strong> ${match.kills}/${match.deaths}</div>
-                            <div><strong>Score:</strong> ${match.score}</div>
-                            <div><strong>Blob:</strong> ${match.walrusBlobId.substr(0, 8)}...</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // Initialize
-        updateStats();
+          },
+        },
+      }
     </script>
-</body>
-</html>
+</head>
+<body class="bg-white font-display text-text-primary antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light bg-white/80 px-4 py-3 backdrop-blur-sm md:px-8 lg:px-16">
+<div class="flex items-center gap-2.5">
+<div class="flex size-8 items-center justify-center rounded-full bg-primary text-white">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 8.25L12 12.75L7.5 8.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M12 17.25V12.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21.75 12C21.75 17.3848 17.3848 21.75 12 21.75C6.61522 21.75 2.25 17.3848 2.25 12C2.25 6.61522 6.61522 2.25 12 2.25C17.3848 2.25 21.75 6.61522 21.75 12Z" stroke="currentColor" stroke-width="2"></path></svg>
+</div>
+<h2 class="text-xl font-bold tracking-tighter">ProofPlay</h2>
+</div>
+<nav class="hidden items-center gap-6 lg:flex">
+<a class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary" href="./working-demo.html">demo</a>
+<a class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary" href="#use-cases">Use Cases</a>
+<a class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary" href="#partners">Partners</a>
+<a class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary" href="#roadmap">Roadmap</a>
+<a class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary" href="#">Docs</a>
+</nav>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 bg-text-primary text-white text-sm font-semibold transition-colors hover:bg-primary">
+<span class="truncate">Integrate Now</span>
+</button>
+</header>
+<main class="flex flex-col items-center">
+<div class="w-full max-w-6xl px-4 py-5 sm:px-8">
+<section class="w-full py-20 md:py-32">
+<div class="flex flex-col items-center justify-center gap-8 text-center">
+<div class="flex items-center gap-2 rounded-full border border-border-light bg-gray-50 px-3 py-1 text-sm font-medium text-primary">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-accent"></span>
+</span>
+<span>Verifiable On-Chain Game Data</span>
+</div>
+<div class="flex flex-col gap-4 max-w-3xl">
+<h1 class="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">The Trust Layer for Web3 Gaming</h1>
+<h2 class="text-text-secondary text-lg font-normal md:text-xl">ProofPlay is a decentralized oracle bringing secure, verifiable, and real-time game data on-chain. Powering the next generation of trustless gaming applications.</h2>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-primary text-white text-base font-semibold transition-colors hover:bg-primary-dark">
+<span class="truncate">Get Started</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-6 bg-transparent text-text-primary text-base font-semibold transition-colors hover:bg-gray-100">
+<span class="truncate">Read Docs</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<section class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 py-16 md:py-24">
+<div class="flex flex-col justify-center gap-3 rounded-xl border border-border-light bg-gray-50 p-8">
+<span class="material-symbols-outlined text-red-accent text-3xl">gpp_bad</span>
+<h3 class="text-2xl font-bold tracking-tight">The Problem with Trust</h3>
+<p class="text-text-secondary">In online gaming and betting, data manipulation and opacity are persistent issues. Players and developers need a trusted, verifiable source of truth for in-game events, achievements, and statistics.</p>
+</div>
+<div class="flex flex-col justify-center gap-3 rounded-xl border border-border-light bg-gray-50 p-8">
+<span class="material-symbols-outlined text-green-accent text-3xl">verified</span>
+<h3 class="text-2xl font-bold tracking-tight">A Verifiable Solution</h3>
+<p class="text-text-secondary">ProofPlay provides a decentralized oracle network that securely fetches, verifies, and delivers game data to smart contracts, ensuring integrity for a new ecosystem of trustless applications.</p>
+</div>
+</section>
+<section class="w-full space-y-12 py-16 md:py-24" id="features">
+<div class="space-y-3 text-center">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Built for a Trustless Future</h2>
+<p class="mx-auto max-w-2xl text-text-secondary text-lg">Core features designed for security, scalability, and ease of use.</p>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">lock</span>
+<h3 class="mt-3 text-lg font-bold">Cryptographic Proofs</h3>
+<p class="mt-1 text-sm text-text-secondary">Utilizes advanced cryptography to ensure data is tamper-proof from source to destination.</p>
+</div>
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">database</span>
+<h3 class="mt-3 text-lg font-bold">Immutable Storage</h3>
+<p class="mt-1 text-sm text-text-secondary">Leverages decentralized storage to create a permanent, auditable history of game events.</p>
+</div>
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">link</span>
+<h3 class="mt-3 text-lg font-bold">On-Chain Records</h3>
+<p class="mt-1 text-sm text-text-secondary">Broadcasts verified data directly to smart contracts, enabling trustless on-chain logic.</p>
+</div>
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">code</span>
+<h3 class="mt-3 text-lg font-bold">Simple Query API</h3>
+<p class="mt-1 text-sm text-text-secondary">A powerful, developer-friendly API to request and integrate specific game data with ease.</p>
+</div>
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">speed</span>
+<h3 class="mt-3 text-lg font-bold">Real-Time Stats</h3>
+<p class="mt-1 text-sm text-text-secondary">Designed for low-latency data feeds, crucial for live betting and dynamic applications.</p>
+</div>
+<div class="rounded-xl border border-border-light bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover">
+<span class="material-symbols-outlined text-primary text-3xl">hub</span>
+<h3 class="mt-3 text-lg font-bold">Game Agnostic</h3>
+<p class="mt-1 text-sm text-text-secondary">A flexible architecture that can be adapted to support any game, on any platform.</p>
+</div>
+</div>
+</section>
+<section class="w-full space-y-12 py-16 md:py-24" id="partners">
+<div class="space-y-3 text-center">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Integrated Partner Games</h2>
+<p class="mx-auto max-w-2xl text-text-secondary text-lg">ProofPlay is already empowering a diverse ecosystem of innovative web3 games.</p>
+</div>
+<div class="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]">
+<div class="flex w-max animate-marquee">
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 1" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNENsUGvTZVAiOo469Cto_68AepGG_jdtseS4tnZel7vjXyHMx_eU2p1-d3fFG4ZJ5K2rsBgu9hYN7jNTw1fTos8HqFegU2ryDHKmFh0YG-Lf40_mcXP6vZQlWbDZturk7VSZb3zqiXA32mYpGBhYX4vtuzWL-kmyf45txQK2Qb7hJDAf8MTFHq4Okjjy1xxj4itu6LdHun6fvwYIidNkIajGfkl871YWlADmPq031HRaUc8KowGS7l8-e4Q1Uou6bZhsJCqJ68Gg"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 2" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnk8Oc8iTRgmVUB51uV3hZmAgoURvOtWZSZbIwQch2YA8pwej0w66xUJIalIsZOPLSKDdHOcuP_nqN3gx1I9iBrRTH5a-8IqNQIyd5OMUbomv2PNnGLYAfT3DEV9yAdEAl9pi7DQUsojSke2dwYZZcGUoHzoK7Kp-wcrmF9rBLg_ByFKMVeyyCTkp9Jd7axcokpDvch8CxR8kih517Mf22Z6GSWKPNPjaU6udSs9kJC3NJaFcSHJzD7dB8D3uE4eCz_nv40dw4xLY"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 3" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNKImSvl0AO9ht_xAOa5qveGjdJQZNBCWrVzljxeudO_94Yif27EYR2q3O8JUFQn8jft6u_WlcEW4nyoOYIZ_9Pv9xTPRELEZTT1Qw4bYTh5ODLBj-cfX7K0QxevBBCjZomKOWYwmpmaIOdzU-b1zWl01HknKW5Cyb4kU4uT02NWTdxZqXK1Y9r_T9ta460kHt2HRev9_xHKLNacp5eRf0-T6FXsxcgsVhMXYr5nXIYf8cMu7mB0CAAwh-PoUjbUwlbcQf_MTB9EE"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 4" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0jyp7v8_S0oSwQ9gFw4R1wKZ6McaeTds5fpKp8Be06gSURtC52MWWrv2M5PPrVorLS_vBoKDwJZ6wbiEVM85oHPUDE5_daG8lLwkUXvfguH_HRWKWPa8Y0DOqrlfIp_19ab8EPUrSz4rYAcW3CU5zxpmaHVQraQ1CCOqthrIUShaDGtwIfG9Rxkcw4eH41QuWNdb5UDD5FUNdwOjDiDs0NuIJJUsKNod_v7c2y0yizs09gFWqijloO2Yn1X3JFxP-wwCCDyWUxd4"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 5" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN8HlFphAYKq4-FypS4sxuqUUYyW3_rKfDbwCpjK41Eh9A6K42ky43hvtaooRlfW9zRKDFlssR4QSVy0qrqGgWHOFRK0dKnhX_so-4O1LUmkytxI761sWp_PyUOdKaISpdAwCUzoi1TV4beBO1mkbuvAFRRirNV18ggen8OdHNp_uzhpha7WFQSgQ9v6YK3lxtir1IhdoVELt4G8zA7W_zIlngjwtzfGIQ5r04gyX11150vUL036mLpQFqGwPjGjEmKEwmKIsWAWA"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 6" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ9RHl2Fd56mCHNrO2edrxjZiQeJbG_Mr6SzjFv3T-g9MuVb31JNX6tRS7U6RBD-LEBsKSCEk6zODw_yW126Q1IT0P6FPr1r3vAH7g5TItmwAQIzljRT2UpCBXL2zGztfMdt7RzT2mxcA8afPqQnRL1d0-XmK5_FShr9dAqCgzDFckvWmzDKv2RXFHWc2DJJ2rlEjYHpYwupLbJFBsCOEXzFk3yMv9bNcHCajQXZjgb09y8WXz_5W9iZxz-AfCGGhbFpRs3DlsKXM"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 1" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOSTz_NNdz2-SsQV6vFj3bduNXmOjL5k5l46lITtHdLK3iuR3enUqM_acs28YXPV4f14ZEpg9sUhgKMaVApjDCpZciG9QF8vWDHsXNcNtD63vxM0LefZJ50J7ZB_jXumAyDBXNAVaAiozAvog94RgHQW9McuI_f9MD2XFmiRpsUTwCxFmPS5S7z_rRLqkkiAvgp1ewOwU-s6zHuPFl9KVRasFydQDy7wiiZqYR5COS8qzDLLK2EPup-23NEsoFEumhj9CJ8Y_g-uU"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 2" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPPTXN3oQn08f_ozb2--2sEPaXhYs0U_VRdad8fChdLQxz7dXqp-Tu2GSpvwuOcBbJ8zC9XcYPTHGDV17AVIAypDLojxc5J-r3pD2mBnrpKyC6yQs64b2MvPHg3VtPSkhxsBrHc9aD7GJ2IEVoFRDNcceKHgQx7WBKik4hTFaaDWmWbmY6IX_NTw9mkDsnm35Dwikgk7Bklkk1jd_3XljS_ljXhLi5BHhrJ3mExCtL_BZsDsA1r6a20C6nFWce1-AXXlXPTFzuY1s"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 3" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBcgyy8yelEGEsrIYEQGNvMcEx5WNjSLMkPOTbQIKqLoHWM3aQxdeSqG6gww9tspYz7V7M4rdXTJ76slely9ekRDrepUsjpWZ6ztcTyaTQJ9IwGHUZjuzNgdIVFhLftCANsM0-lQZ6-fvJi-itXjGo8UgGn81caeyvR9c_Av1FU_wWMwZw-K3n5OJJ5pRy0iUM80HO381r4dmDj79V8USzapZsYkMHspAI3kW-w5-gbOojcTCC-iRmX9cAh4Bfs-xVJil5_-f68yI"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 4" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYDQYd_yXzq_AbJBtGMJ_r081GtJxc1q6WvV7WhPxH1HM_brO1ZpqD6s5pRy2wzUGxGEFi_GNcJocqQOVVR-WsvexkHHY5Fw_MRSt0ODwYDW1nTKCO3NkJQPouUUlnCNMCG3Jvlcu6mPzJlWT7dLQ8A5kQFN_o1c2cpF3NaE_zWUe5y-FCJmE7rQdPqanECICe11LRd-Y7ZLCk4Rlqo3EaNqWUERfQJs4Apad4xvMy2bVzMWOlcos7kE52b7qKcTVNYAF5uQPQi6c"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 5" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7AscWM22gCvEOHPOhS5tUgX6H4Y9-Dc4oX5ExAqo22sk6a4crm0vcRcqdQC3r6gGngFVlauNIv3VMBP3thqsejozL-4ddvRfWWrm8t0Nrxw9OIHC1zIupb-tk0topQC5DzzS48chsHa0ANwHMwLXsKXqKzFI_zx7wgQiIIauJHne62LiAqYTPlJzpMjCDUIwE08gFuQ5QBmARnTXS4dAvW-Ffn7psCwci68lXRjY_lY0AMOJ5Lxlqwu0piht-BRKIwmz1wqK18As"/>
+</div>
+<div class="flex items-center justify-center p-4">
+<img alt="Partner Logo 6" class="h-10 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe3gp30zCCXmBdNZclF2FmTnOwuyhvh2_0SKCer-WrL6kH6RLwoo2w_uwC4NEvhzwnAjkH9mmmmNV6HSrAeNQrXvpWDg9KxdCrS905oCu7-CjKA-euejk4LE8qd1FGzd0xmHsGZRr-bfX9Vn9K3hzk2LfHvM5iTLDWIuup7BSY_qaempHYyvB5F5rpyuZcW6cLlFoh4Z2PxcPtl47EA7J3c5soxJfelwisvJ05B8G8i3ApixLti0Bg9XmyHw_uNPbzcIaW4Vf01aM"/>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full space-y-12 py-16 md:py-24">
+<div class="space-y-3 text-center">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Powering Prediction Markets</h2>
+<p class="mx-auto max-w-2xl text-text-secondary text-lg">Leading platforms rely on ProofPlay for accurate and timely data to settle markets.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<a class="group block rounded-xl border border-border-light p-6 transition-all hover:border-primary hover:bg-indigo-50/50" href="#">
+<div class="flex items-center gap-4">
+<img alt="Polymarket Logo" class="h-12 w-12 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtJJJbMGZQUa2IIK831e5zetzMWjiD_5xSaYwBfCVTL2mjzLqp8WwJ44WJ8L7TQcPWkEXn6Xvyrxqe-mPXaoHMLhnMxPCFgjtqsVt_Mk2i7HCAlrkllLuOJWUNYrz-GbT3ngR3jjMg6fLeNuJNFdVXB2P8botFBZdnJ-90KfgzWAUVGsy795YK-3LDjCGHAG8xriT4WX5UmOAogVjBlPUuIjqafXQuJyRqAb5GI35KeqW7McYVEAuLOKWfRMZentM1BFYLM7Mv7_U"/>
+<div>
+<h3 class="font-bold text-text-primary">Polymarket</h3>
+<p class="text-sm text-text-secondary">Esports &amp; Gaming</p>
+</div>
+</div>
+<p class="mt-4 text-sm text-text-secondary">Using ProofPlay to settle thousands of daily esports markets with unparalleled speed and reliability.</p>
+</a>
+<a class="group block rounded-xl border border-border-light p-6 transition-all hover:border-primary hover:bg-indigo-50/50" href="#">
+<div class="flex items-center gap-4">
+<img alt="Azuro Protocol Logo" class="h-12 w-12 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGDa01XuuiZ8GM7iQxnxdx0u5AoE6O-KTy6O3NuJ9-mpUkGK12yuFrPihRsZdmwQnwfex_nMqbf4VBbiiNmW4rxsxsaTPIQlJV84cABzhkUATSX1OY5xNMpgPjJxozqip4aZLdRjE7KpwHWaXd5qdVYZTFnwKFibTG2l3PCXW4bs35ERpxYzVxnUjh9XGqbJ44yUcXBs8bijfbamFHmsf3h5LjD3aDljXEoJNT-058TNGYALPAQdzurqdTQDKCpOv6Va-PfaLRGeU"/>
+<div>
+<h3 class="font-bold text-text-primary">Azuro Protocol</h3>
+<p class="text-sm text-text-secondary">On-chain Betting</p>
+</div>
+</div>
+<p class="mt-4 text-sm text-text-secondary">Integrating ProofPlay data to provide a robust infrastructure for decentralized sports and esports betting applications.</p>
+</a>
+<a class="group block rounded-xl border border-border-light p-6 transition-all hover:border-primary hover:bg-indigo-50/50" href="#">
+<div class="flex items-center gap-4">
+<img alt="SX Bet Logo" class="h-12 w-12 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwZawkum_MTcDChMP-KUjjhLFzsTgkzc1XaIRtKTE78IPYaoqDlpYUfEygsxjJObgv9e6yMaT5IMii8dIkYo9KnlvObw87J4Y26xI9bymv9n_nfzfAeLg7KUQknu69QLfVu-f1bYR459U0l8CkombXPq2h68WJbPmXRnhI1RLQjvMpxgk68R43PRcEVRT4hjvGKgi406bVlHRfO7fet8vPAPjzG-YlI4P_bHnQUzMramdWJJWEPVhMKOtq0_TCDtNbET34oAvIV6Q"/>
+<div>
+<h3 class="font-bold text-text-primary">SX Bet</h3>
+<p class="text-sm text-text-secondary">Peer-to-Peer Markets</p>
+</div>
+</div>
+<p class="mt-4 text-sm text-text-secondary">Leveraging ProofPlay to verify player performance stats for novel, peer-to-peer betting markets.</p>
+</a>
+</div>
+</section>
+<section class="w-full space-y-12 py-16 md:py-24" id="use-cases">
+<div class="space-y-3 text-center">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Explore the Possibilities</h2>
+<p class="mx-auto max-w-2xl text-text-secondary text-lg">From prediction markets to dynamic NFTs, ProofPlay unlocks new potential.</p>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+<div class="rounded-xl border border-transparent bg-gray-50 p-6 transition-all hover:border-border-light hover:shadow-sm">
+<h3 class="text-lg font-bold text-primary">Esports Prediction Markets</h3>
+<p class="mt-1 text-sm text-text-secondary">Create decentralized betting platforms where outcomes are automatically settled by verified on-chain data, eliminating intermediaries.</p>
+</div>
+<div class="rounded-xl border border-transparent bg-gray-50 p-6 transition-all hover:border-border-light hover:shadow-sm">
+<h3 class="text-lg font-bold text-primary">Player Performance Betting</h3>
+<p class="mt-1 text-sm text-text-secondary">Enable novel markets based on individual player stats, like 'most kills' or 'highest score', with trustless validation.</p>
+</div>
+<div class="rounded-xl border border-transparent bg-gray-50 p-6 transition-all hover:border-border-light hover:shadow-sm">
+<h3 class="text-lg font-bold text-primary">Dynamic Gaming NFTs</h3>
+<p class="mt-1 text-sm text-text-secondary">Automatically mint and evolve unique NFTs based on players' in-game achievements and verified statistics.</p>
+</div>
+<div class="rounded-xl border border-transparent bg-gray-50 p-6 transition-all hover:border-border-light hover:shadow-sm">
+<h3 class="text-lg font-bold text-primary">Anti-Cheat Verification</h3>
+<p class="mt-1 text-sm text-text-secondary">Use on-chain data to validate legitimate gameplay for high-stakes tournaments, ensuring fair competition and payouts.</p>
+</div>
+</div>
+</section>
+<section class="w-full space-y-12 py-16 md:py-24" id="roadmap">
+<div class="space-y-3 text-center">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Our Roadmap</h2>
+<p class="mx-auto max-w-2xl text-text-secondary text-lg">Charting the course for a decentralized gaming future.</p>
+</div>
+<div class="relative mx-auto max-w-2xl">
+<div class="absolute left-4 top-0 h-full w-0.5 -translate-x-1/2 bg-border-light md:left-1/2"></div>
+<div class="relative flex flex-col gap-12">
+<div class="flex items-start gap-6 md:justify-normal md:gap-0">
+<div class="hidden md:block w-1/2 pr-8 text-right"></div>
+<div class="absolute left-4 top-1 z-10 size-4 -translate-x-1/2 rounded-full border-2 border-primary bg-white"></div>
+<div class="w-full md:w-1/2 md:pl-8">
+<p class="text-sm font-semibold text-primary">COMPLETE</p>
+<h4 class="font-bold">Q1 2024: Testnet Launch</h4>
+<p class="text-sm text-text-secondary">Testnet successfully launched with initial SDK release for early partners.</p>
+</div>
+</div>
+<div class="flex items-start gap-6 md:justify-normal md:gap-0">
+<div class="w-full text-left md:w-1/2 md:pr-8 md:text-right">
+<p class="text-sm font-semibold text-green-accent">IN PROGRESS</p>
+<h4 class="font-bold">Q2 2024: Mainnet Beta</h4>
+<p class="text-sm text-text-secondary">Mainnet Beta rollout with first wave of game and market integrations.</p>
+</div>
+<div class="absolute left-4 top-1 z-10 size-4 -translate-x-1/2 rounded-full border-2 border-green-accent bg-white"></div>
+<div class="hidden md:block w-1/2 pl-8"></div>
+</div>
+<div class="flex items-start gap-6 md:justify-normal md:gap-0">
+<div class="hidden md:block w-1/2 pr-8 text-right"></div>
+<div class="absolute left-4 top-1 z-10 size-4 -translate-x-1/2 rounded-full border-2 border-border-light bg-white"></div>
+<div class="w-full md:w-1/2 md:pl-8">
+<p class="text-sm font-semibold text-text-secondary">UPCOMING</p>
+<h4 class="font-bold text-gray-500">Q3 2024: Governance Rollout</h4>
+<p class="text-sm text-text-secondary">Introduction of decentralized governance for protocol upgrades and management.</p>
+</div>
+</div>
+<div class="flex items-start gap-6 md:justify-normal md:gap-0">
+<div class="w-full text-left md:w-1/2 md:pr-8 md:text-right">
+<p class="text-sm font-semibold text-text-secondary">UPCOMING</p>
+<h4 class="font-bold text-gray-500">Q4 2024: Network Scaling</h4>
+<p class="text-sm text-text-secondary">Expanded game support and scaling solutions for the oracle network.</p>
+</div>
+<div class="absolute left-4 top-1 z-10 size-4 -translate-x-1/2 rounded-full border-2 border-border-light bg-white"></div>
+<div class="hidden md:block w-1/2 pl-8"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-16 md:py-24">
+<div class="relative overflow-hidden rounded-xl bg-primary/10 p-8 text-center md:p-16">
+<div class="relative z-10 flex flex-col items-center gap-6">
+<h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Ready to Build the Future of Gaming?</h2>
+<p class="max-w-xl text-text-secondary">Dive into our documentation to start integrating ProofPlay, or join our community to get involved and shape what's next.</p>
+<div class="flex flex-wrap items-center justify-center gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-primary text-white text-base font-semibold transition-colors hover:bg-primary-dark">
+<span class="truncate">Integrate Now</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-white text-text-primary text-base font-semibold shadow-sm transition-colors hover:bg-gray-100">
+<span class="truncate">Join Discord</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="w-full border-t border-solid border-border-light bg-white">
+<div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 py-8 sm:flex-row sm:px-8">
+<div class="flex items-center gap-2">
+<div class="flex size-6 items-center justify-center rounded-full bg-primary text-white">
+<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 8.25L12 12.75L7.5 8.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M12 17.25V12.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21.75 12C21.75 17.3848 17.3848 21.75 12 21.75C6.61522 21.75 2.25 17.3848 2.25 12C2.25 6.61522 6.61522 2.25 12 2.25C17.3848 2.25 21.75 6.61522 21.75 12Z" stroke="currentColor" stroke-width="2"></path></svg>
+</div>
+<p class="text-sm text-text-secondary">© 2024 ProofPlay. All rights reserved.</p>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-text-secondary transition-colors hover:text-primary" data-alt="Twitter social media link" href="#">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
+</a>
+<a class="text-text-secondary transition-colors hover:text-primary" data-alt="GitHub social media link" href="#">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" fill-rule="evenodd"></path></svg>
+</a>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>
